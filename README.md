@@ -26,15 +26,15 @@ project and get the same guardrails everywhere — no copying, no reinventing.
 ## Install
 
 ```bash
-# once per machine — point at this folder (or its git URL)
-/plugin marketplace add D:/Projects/claude-agent-guardrails
+# once per machine
+/plugin marketplace add ramialfahham/claude-agent-guardrails
 
 # in any project
 /plugin install claude-agent-guardrails@rami-guardrails
 ```
 
-To share with a teammate, push this folder to a git repo and use the git URL in
-`/plugin marketplace add` instead of the local path.
+It's public, so teammates run the same two commands. (Or clone it and point
+`/plugin marketplace add` at the local folder path.)
 
 ## Per-project files (not part of this plugin)
 
