@@ -36,10 +36,12 @@ project and get the same guardrails everywhere — no copying, no reinventing.
 It's public, so teammates run the same two commands. (Or clone it and point
 `/plugin marketplace add` at the local folder path.)
 
-## Per-project files (not part of this plugin)
+## Per-project files (the setup command writes these into your repo)
 
-Each repo still keeps its own short `CLAUDE.md` (what the project is) and
-`.claude/active_work.md` (the handover note the session hooks read and update).
+`setup-dbt-project` drops in a `CLAUDE.md`, a `.claude/working-agreement.md` (the rules
+the hooks and reviewers reference — five-step protocol, branch discipline, decision rights,
+escalation, anti-patterns), `.claude/review_routing.json`, and a starter
+`.claude/active_work.md` handover. Editable templates live in `templates/repo/`.
 
 ## Build status
 

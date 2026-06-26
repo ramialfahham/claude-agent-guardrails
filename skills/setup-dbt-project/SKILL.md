@@ -43,11 +43,13 @@ do not invent models or business logic.
      reading a GitHub Actions secret) and, only if the warehouse needs it, an
      auth step (e.g. BigQuery writes the service-account JSON from a secret)
 
-5. **Add the project's guardrail files** (so the review gate has what it needs):
+5. **Add the project's guardrail files** (so the guards have the docs they reference):
    - copy `${CLAUDE_PLUGIN_ROOT}/review_routing.json` to `.claude/review_routing.json`
+   - copy `${CLAUDE_PLUGIN_ROOT}/templates/repo/working-agreement.md` to
+     `.claude/working-agreement.md`
+   - copy `${CLAUDE_PLUGIN_ROOT}/templates/repo/CLAUDE.md` to `CLAUDE.md` (only if none
+     exists); replace `__PROJECT_NAME__` and fill the `<…>` placeholders
    - create `.claude/active_work.md` with a one-line starting note
-   - if there is no `CLAUDE.md`, create a short one: what the project is, plus a
-     pointer to `docs/layering.md` for the layer rules
 
 6. **Tell the user the next steps** (do NOT run these for them):
    - `pip install -r requirements.txt`
