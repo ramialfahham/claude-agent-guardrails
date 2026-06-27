@@ -50,6 +50,9 @@ do not invent models or business logic.
    - copy `${CLAUDE_PLUGIN_ROOT}/templates/repo/CLAUDE.md` to `CLAUDE.md` (only if none
      exists); replace `__PROJECT_NAME__` and fill the `<…>` placeholders
    - create `.claude/active_work.md` with a one-line starting note
+   - copy `${CLAUDE_PLUGIN_ROOT}/templates/repo/pre-commit-config.yaml` to
+     `.pre-commit-config.yaml`, `templates/repo/gitleaks.toml` to `.gitleaks.toml`, and
+     `templates/repo/github-secrets.yml` to `.github/workflows/security-secrets.yml`
 
 6. **Wire the read-only dbt MCP** (gives the agent + reviewers lineage):
    - copy `${CLAUDE_PLUGIN_ROOT}/templates/repo/mcp.json` to `.mcp.json`
@@ -67,5 +70,6 @@ do not invent models or business logic.
      `DBT_PROFILES_DIR`) and fill in credentials
    - `dbt deps` then `dbt build`
    - in the GitHub repo, add the Actions secrets the CI file references
+   - `pip install pre-commit && pre-commit install` (turns on the local hooks)
 
 Then confirm what was created and stop.

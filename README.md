@@ -9,6 +9,7 @@ project and get the same guardrails everywhere — no copying, no reinventing.
 - Hands over notes between chats, so a new session continues where the last stopped
 - Makes the agent restate the task and get your OK before writing code
 - Re-checks the plan right after you approve it
+- `/validate` runs CI's checks locally before you push; `/status` shows branch, PRs, CI + the handover
 
 **2. Reviews the work before a commit**
 - Four reviewer roles: scope, analytics-engineer (dbt), CTO (tooling/CI), data-engineer (ingestion)
@@ -41,8 +42,9 @@ It's public, so teammates run the same two commands. (Or clone it and point
 `setup-dbt-project` drops in a `CLAUDE.md`, a `.claude/working-agreement.md` (the rules
 the hooks and reviewers reference — five-step protocol, branch discipline, decision rights,
 escalation, anti-patterns), `.claude/review_routing.json`, a read-only dbt MCP config (`.mcp.json`, lineage for the
-agent + reviewers — needs `uv`/`uvx`), and a starter `.claude/active_work.md` handover.
-Editable templates live in `templates/repo/`.
+agent + reviewers — needs `uv`/`uvx`), a gitleaks secret-scan (`.gitleaks.toml` +
+`.github/workflows/security-secrets.yml`), a `.pre-commit-config.yaml`, and a starter
+`.claude/active_work.md` handover. Editable templates live in `templates/repo/`.
 
 ## Build status
 

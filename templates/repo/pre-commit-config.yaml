@@ -1,0 +1,35 @@
+# Copied to .pre-commit-config.yaml by setup-dbt-project. Run `pre-commit install` once.
+# The sqlfluff hook uses the dbt templater, so it needs `dbt deps` run and a profile.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: detect-private-key
+      - id: check-yaml
+        args: [--unsafe]   # allow GitHub Actions ${{ }} syntax
+      - id: check-json
+        exclude: ^target/
+      - id: end-of-file-fixer
+        exclude: \.(svg|png|jpe?g)$
+      - id: trailing-whitespace
+        exclude: \.(md|svg)$
+        args: [--markdown-linebreak-ext=md]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.7.4
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^(scripts|tests|ingestion|loaders|src)/.*\.py$
+      - id: ruff-format
+        files: ^(scripts|tests|ingestion|loaders|src)/.*\.py$
+
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 3.2.5
+    hooks:
+      - id: sqlfluff-lint
+        files: ^models/.*\.sql$
+        args: [--config, .sqlfluff]
+        additional_dependencies: ['sqlfluff-templater-dbt==3.2.5']
