@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "dbt": {
+      "command": "uvx",
+      "args": ["--python", "3.12", "dbt-mcp"],
+      "env": {
+        "DBT_PROJECT_DIR": "__DBT_PROJECT_DIR__",
+        "DBT_PATH": "__DBT_PATH__",
+        "DBT_PROFILES_DIR": "__DBT_PROFILES_DIR__",
+        "DBT_MCP_ENABLE_TOOLS": "get_lineage_dev,get_node_details_dev,list,parse"
+      }
+    }
+  }
+}

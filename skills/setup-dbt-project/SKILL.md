@@ -51,7 +51,17 @@ do not invent models or business logic.
      exists); replace `__PROJECT_NAME__` and fill the `<…>` placeholders
    - create `.claude/active_work.md` with a one-line starting note
 
-6. **Tell the user the next steps** (do NOT run these for them):
+6. **Wire the read-only dbt MCP** (gives the agent + reviewers lineage):
+   - copy `${CLAUDE_PLUGIN_ROOT}/templates/repo/mcp.json` to `.mcp.json`
+   - replace `__DBT_PROJECT_DIR__` with the repo's absolute path (where `dbt_project.yml`
+     is), `__DBT_PATH__` with the dbt executable (the project venv's `dbt`, or `dbt` if on
+     PATH), and `__DBT_PROFILES_DIR__` with the profiles dir (usually `~/.dbt`)
+   - leave `DBT_MCP_ENABLE_TOOLS` as-is — it allowlists read-only discovery tools only
+     (lineage, node details, list, parse); no warehouse execution
+   - tell the user it needs `uv`/`uvx` installed, loads on the next session start, and can
+     be turned off by deleting `.mcp.json`
+
+7. **Tell the user the next steps** (do NOT run these for them):
    - `pip install -r requirements.txt`
    - copy `profiles.example.yml` to `~/.dbt/profiles.yml` (or set
      `DBT_PROFILES_DIR`) and fill in credentials

@@ -11,6 +11,8 @@
     ".github/workflows/*": ["cto-reviewer"],
     "requirements*.txt": ["cto-reviewer"],
     "*hooks/*": ["cto-reviewer"],
+    ".mcp.json": ["cto-reviewer"],
+    ".cursor/mcp.json": ["cto-reviewer"],
     "ingestion/*": ["data-engineer-reviewer"],
     "extract/*": ["data-engineer-reviewer"],
     "loaders/*": ["data-engineer-reviewer"]

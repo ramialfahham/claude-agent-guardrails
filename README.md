@@ -40,8 +40,9 @@ It's public, so teammates run the same two commands. (Or clone it and point
 
 `setup-dbt-project` drops in a `CLAUDE.md`, a `.claude/working-agreement.md` (the rules
 the hooks and reviewers reference — five-step protocol, branch discipline, decision rights,
-escalation, anti-patterns), `.claude/review_routing.json`, and a starter
-`.claude/active_work.md` handover. Editable templates live in `templates/repo/`.
+escalation, anti-patterns), `.claude/review_routing.json`, a read-only dbt MCP config (`.mcp.json`, lineage for the
+agent + reviewers — needs `uv`/`uvx`), and a starter `.claude/active_work.md` handover.
+Editable templates live in `templates/repo/`.
 
 ## Build status
 
