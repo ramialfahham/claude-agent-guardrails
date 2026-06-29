@@ -47,6 +47,36 @@ agent + reviewers — needs `uv`/`uvx`), a gitleaks secret-scan (`.gitleaks.toml
 `.github/workflows/security-secrets.yml`), a `.pre-commit-config.yaml`, and a starter
 `.claude/active_work.md` handover. Editable templates live in `templates/repo/`.
 
+## First run on a new project
+
+This is a *starting* scaffold, not a finished setup — use it as-is, then adjust per project
+as you learn what that project needs. It's warehouse-agnostic: the setup command injects the
+warehouse-specific bits (adapter, profiles, CI auth) for whichever adapter you pick.
+
+Two tiers, by risk:
+
+- **Adopt as-is (low risk).** The whole governance layer — `working-agreement.md` (incl.
+  §9 untrusted data, §10 single metric definition), `CLAUDE.md`, the layer rules, the
+  reviewer agents, and the hooks. A hook *bug* can't block you — the hooks fail open on
+  error — while the guards meant to stop you (branch discipline, the review gate) hard-block
+  by design. The docs are just docs. Safe to drop into anything.
+- **Expect a small first-run tweak** — only where the kit touches an external system:
+  - **CI warehouse auth** — the setup command injects per-warehouse secrets/auth; the usual
+    first-PR hiccup is a secret name not matching. You'll see it as the `build` job going red
+    (and `gate`, the required check, going red with it) while `changes` stays green.
+  - **dbt-project-evaluator's first run** — on a real project it may surface many
+    "missing test/description" findings. That's it working, not breaking; tune it with a
+    `dbt_project_evaluator_exceptions` seed (see `docs/cost-controls.md`).
+  - **The read-only dbt MCP** (`.mcp.json`) — needs `uv`/`uvx` and correct local paths.
+  - **dbt floor** — the scaffold expects dbt-core `>=1.10` (required by dbt-project-evaluator);
+    if your adapter isn't there yet, `dbt deps` will tell you.
+  - **Semantic layer** (opt-in) — definitions and local `mf` validation are OSS; serving via
+    the Semantic Layer API needs dbt Cloud. See `docs/semantic-layer.md`.
+
+Heads-up: the scaffold hasn't been exercised end-to-end yet, so treat your first real project
+as the shakeout — the rough edges above are the kind that only show up on contact with a
+warehouse, and fixing them as you go is the intended workflow.
+
 ## Build status
 
 - [x] Folder structure + manifest
