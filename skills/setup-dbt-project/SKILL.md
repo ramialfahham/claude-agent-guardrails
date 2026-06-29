@@ -39,9 +39,13 @@ do not invent models or business logic.
      warehouse not shown, write the correct output per that adapter's docs.
    - `.sqlfluff` — set `dialect` to the warehouse's dialect (bigquery, snowflake,
      postgres, duckdb, redshift, databricks; `ansi` if unsure)
-   - `.github/workflows/ci.yml` — add the warehouse's connection env vars (each
-     reading a GitHub Actions secret) and, only if the warehouse needs it, an
-     auth step (e.g. BigQuery writes the service-account JSON from a secret)
+   - `.github/workflows/ci.yml` — in the **`build` job**, add the warehouse's
+     connection env vars (each reading a GitHub Actions secret) and, only if the
+     warehouse needs it, an auth step (e.g. BigQuery writes the service-account JSON
+     from a secret). Leave the `changes` (path filter), `gate`, and the commented-out
+     opt-in slim-build steps untouched — they're warehouse-neutral. Tell the user to
+     make **`gate`** the required status check (not `build`), so docs-only PRs don't
+     hang on a skipped build.
 
 5. **Add the project's guardrail files** (so the guards have the docs they reference):
    - copy `${CLAUDE_PLUGIN_ROOT}/review_routing.json` to `.claude/review_routing.json`

@@ -1,7 +1,13 @@
-# Copied to .github/workflows/ci.yml by the setup-dbt-project command, which fills
-# in the warehouse-specific bits (env vars + any auth step) for your warehouse.
-# Runs dbt build (models + tests) on every PR and blocks the merge on failure —
-# the first safety net, ahead of review.
+# Copied to .github/workflows/ci.yml by the setup-dbt-project command, which fills in
+# the warehouse-specific bits (env vars + any auth step) in the `build` job for your
+# warehouse. Everything else here is warehouse-agnostic — leave it alone.
+#
+# Jobs:
+#   changes : skips the expensive warehouse build on docs-only / non-dbt PRs.
+#   build   : runs `dbt build` (models + tests) only when dbt files changed.
+#   gate    : ALWAYS runs, so branch protection has one deterministic required check
+#             even when `build` was path-filter-skipped. Make THIS the required check
+#             (not `build`), or docs-only PRs will hang on a never-running check.
 name: dbt CI
 
 on:
@@ -9,8 +15,38 @@ on:
   workflow_dispatch:
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      dbt: ${{ steps.filter.outputs.dbt }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          # Build-relevant paths only. Edits outside these (docs/**, *.md, the UI,
+          # etc.) do NOT trigger the build. Add new build inputs here as the project
+          # grows. Paths are relative to the dbt project root (the repo root here).
+          filters: |
+            dbt:
+              - 'models/**'
+              - 'macros/**'
+              - 'seeds/**'
+              - 'snapshots/**'
+              - 'tests/**'
+              - 'analyses/**'
+              - '*.yml'
+              - '.sqlfluff'
+              - 'requirements.txt'
+              - '.github/workflows/ci.yml'
+
   build:
     runs-on: ubuntu-latest
+    needs: changes
+    # workflow_dispatch always builds; PRs build only when dbt files changed.
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      needs.changes.outputs.dbt == 'true'
     env:
       DBT_PROFILES_DIR: ${{ github.workspace }}
       # the setup command adds your warehouse's connection env vars here,
@@ -24,7 +60,55 @@ jobs:
           python-version: "3.11"
       - run: pip install -r requirements.txt
       # the setup command adds a warehouse auth step here only if one is needed
-      # (e.g. BigQuery writes the service-account JSON from a secret to a file)
+      # (e.g. BigQuery writes the service-account JSON from a secret to a file).
+      # Any opt-in slim-build steps below must stay AFTER this auth step.
       - run: dbt deps
       - name: Build + test
         run: dbt build --target ci
+
+      # --- OPT-IN: slim PR builds (enable when full builds start costing too much) -
+      # On a large DAG, rebuilding everything on every PR is wasteful. To switch:
+      #   1. add `push: { branches: [main] }` to the `on:` triggers above, so a merge
+      #      to main still produces a complete prod build;
+      #   2. delete the "Build + test" step above and uncomment the three steps below.
+      # PRs then build only changed models + downstream children + tests, diffed
+      # against a manifest compiled from `main` at PR time — no stored state, no
+      # --defer. main-push / dispatch keep the full build. All warehouse-agnostic:
+      # `state:modified+` is core dbt and adapter-independent.
+      #
+      # - name: Compile baseline manifest from main (PR only)
+      #   if: github.event_name == 'pull_request'
+      #   run: |
+      #     git -C "$GITHUB_WORKSPACE" fetch --no-tags --depth=1 origin main
+      #     # idempotent on reused (self-hosted) runners where the path may survive:
+      #     git -C "$GITHUB_WORKSPACE" worktree remove --force /tmp/main-src 2>/dev/null || true
+      #     git -C "$GITHUB_WORKSPACE" worktree add --detach /tmp/main-src FETCH_HEAD
+      #     ( cd /tmp/main-src && dbt deps && dbt compile --target ci --target-path /tmp/main-state )
+      # - name: Build changed models + children (PR — slim)
+      #   if: github.event_name == 'pull_request'
+      #   # An empty selection (PR changes no models) is a no-op success.
+      #   run: dbt build --target ci --select state:modified+ --state /tmp/main-state
+      # - name: Build everything (main push / dispatch — full)
+      #   if: github.event_name != 'pull_request'
+      #   run: dbt build --target ci
+
+  # Terminal gate: always runs and reports a single pass/fail that branch protection
+  # can require regardless of whether `build` was path-filter-skipped.
+  gate:
+    needs: [changes, build]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify build passed or was correctly skipped
+        run: |
+          # `changes` must succeed. `build` is allowed to skip (means no dbt files
+          # changed); only fail on an actual failure or cancellation.
+          if [ "${{ needs.changes.result }}" != "success" ]; then
+            echo "changes job did not succeed (result=${{ needs.changes.result }})"
+            exit 1
+          fi
+          if [ "${{ needs.build.result }}" = "failure" ] || [ "${{ needs.build.result }}" = "cancelled" ]; then
+            echo "build did not pass (result=${{ needs.build.result }})"
+            exit 1
+          fi
+          echo "gate passed (changes=${{ needs.changes.result }}, build=${{ needs.build.result }})"
