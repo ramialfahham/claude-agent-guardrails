@@ -23,7 +23,8 @@ do not invent models or business logic.
 3. **Copy the template tree** from `${CLAUDE_PLUGIN_ROOT}/templates/dbt/` into the
    repo root, then replace every `__PROJECT_NAME__` with `project_name`:
    - `dbt_project.yml`, `packages.yml`, `requirements.txt`, `.sqlfluff`,
-     `.gitignore`, `profiles.example.yml`, `docs/layering.md`, `models/README.md`
+     `.gitignore`, `profiles.example.yml`, `docs/layering.md`, `docs/cost-controls.md`,
+     `models/README.md`
    - create the five model layer folders, each with an empty `.gitkeep`:
      `models/staging`, `models/base`, `models/core`, `models/intermediate`,
      `models/marts`

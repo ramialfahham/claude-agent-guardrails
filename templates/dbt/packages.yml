@@ -5,3 +5,8 @@ packages:
     version: [">=0.10.0", "<0.11.0"]
   - package: dbt-labs/codegen
     version: [">=0.10.0", "<0.14.0"]
+  # Structural lint: flags models missing tests/docs, DAG shape issues, hardcoded
+  # refs, naming breaks. Run as a check via /validate or CI (see docs/cost-controls.md).
+  # 1.x needs dbt-core >=1.10.6 — see the adapter floor in requirements.txt.
+  - package: dbt-labs/dbt_project_evaluator
+    version: [">=1.1.0", "<2.0.0"]

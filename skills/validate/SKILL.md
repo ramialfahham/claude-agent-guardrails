@@ -27,6 +27,7 @@ steps here so this stays a faithful local copy of CI.
 dbt deps
 dbt build --select state:modified+ --state <ci-manifest>   # changed models + their tests
 # or, without a state manifest, a full but slower:  dbt build
+dbt build --select package:dbt_project_evaluator           # structure lint: missing tests/docs, DAG shape (cheap, metadata-only)
 ```
 
 No warehouse auth → skip with a note and let CI run the build. Don't run a full `dbt build`

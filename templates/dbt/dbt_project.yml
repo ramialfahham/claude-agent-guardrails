@@ -4,6 +4,14 @@ config-version: 2
 
 profile: '__PROJECT_NAME__'
 
+# dbt_project_evaluator overrides some core macros via a cross-db shim. This dispatch is
+# REQUIRED for Databricks/Spark/DuckDB/Redshift (and a harmless no-op on BigQuery/
+# Snowflake/Postgres). Without it, `dbt build --select package:dbt_project_evaluator`
+# fails to compile on those warehouses.
+dispatch:
+  - macro_namespace: dbt
+    search_order: ['dbt_project_evaluator', 'dbt']
+
 model-paths: ["models"]
 seed-paths: ["seeds"]
 test-paths: ["tests"]
@@ -29,3 +37,10 @@ models:
       +materialized: view
     marts:
       +materialized: table
+
+  # dbt-project-evaluator: structural-lint models, isolated to their own schema.
+  # They query the dbt graph + information schema (cheap — not your data). Run them
+  # as a check via /validate or CI; exclude `package:dbt_project_evaluator` from any
+  # scheduled prod build if you don't want them materialized there.
+  dbt_project_evaluator:
+    +schema: dbt_project_evaluator
