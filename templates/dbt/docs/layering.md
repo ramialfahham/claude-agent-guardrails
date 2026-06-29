@@ -27,6 +27,15 @@ Consumption: denormalised, app-ready tables. No hardcoded tenant / partition /
 category identifier in business logic — a mart should work for any partition
 unchanged. New metrics, labels, or formats are owner-level decisions.
 
+## Semantic layer / metrics (optional, on top of marts)
+The authoritative home for metric definitions (working-agreement §10). With dbt's
+semantic layer (MetricFlow), semantic models sit on top of marts and expose entities,
+dimensions, and measures; metrics are defined once on those measures and read from there.
+The mart a metric reads from is its input, not a second definition — reading or rolling up
+a defined metric is fine, independently recomputing it is not. Without a semantic layer,
+pick one designated mart as the metric's single home. Opt-in — see
+[`semantic-layer.md`](semantic-layer.md).
+
 ## Consumption (export scripts / app code, outside dbt)
 May select, filter, group, rename, serialise — but **never** compute a metric,
 choose a window, derive a result, rank, or map identity. If no mart serves what a

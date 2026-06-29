@@ -19,12 +19,14 @@ do not invent models or business logic.
    - **which warehouse** — BigQuery, Snowflake, Postgres, DuckDB, Redshift,
      Databricks, or any other dbt adapter
    - the connection basics for that warehouse (project/account/host/database etc.)
+   - **set up the dbt Semantic Layer (MetricFlow) now?** optional — metric definitions on
+     top of marts; can be added later. Definitions are OSS/local; serving needs dbt Cloud.
 
 3. **Copy the template tree** from `${CLAUDE_PLUGIN_ROOT}/templates/dbt/` into the
    repo root, then replace every `__PROJECT_NAME__` with `project_name`:
    - `dbt_project.yml`, `packages.yml`, `requirements.txt`, `.sqlfluff`,
      `.gitignore`, `profiles.example.yml`, `docs/layering.md`, `docs/cost-controls.md`,
-     `models/README.md`
+     `docs/semantic-layer.md`, `models/README.md`
    - create the five model layer folders, each with an empty `.gitkeep`:
      `models/staging`, `models/base`, `models/core`, `models/intermediate`,
      `models/marts`
@@ -69,7 +71,16 @@ do not invent models or business logic.
    - tell the user it needs `uv`/`uvx` installed, loads on the next session start, and can
      be turned off by deleting `.mcp.json`
 
-7. **Tell the user the next steps** (do NOT run these for them):
+7. **If the user opted into the Semantic Layer** (otherwise skip this step):
+   - create `models/semantic/` with an empty `.gitkeep` — metric definitions live here;
+     keeping it empty until a mart exists keeps `dbt parse` green
+   - in `requirements.txt`, uncomment the `dbt-metricflow[dbt-<adapter>]` line and set the
+     extra to match the chosen warehouse (e.g. `dbt-metricflow[dbt-bigquery]`)
+   - point the user at `docs/semantic-layer.md`: definitions are open-source and validated/
+     queried locally with `mf` (`mf validate-configs`, `mf query`); the hosted Semantic
+     Layer API for BI tools is a dbt Cloud feature; copy the worked example once a mart exists
+
+8. **Tell the user the next steps** (do NOT run these for them):
    - `pip install -r requirements.txt`
    - copy `profiles.example.yml` to `~/.dbt/profiles.yml` (or set
      `DBT_PROFILES_DIR`) and fill in credentials
