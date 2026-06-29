@@ -4,3 +4,7 @@
 # Floor is 1.10: dbt_project_evaluator (packages.yml) requires dbt-core >=1.10.6.
 sqlfluff>=3.0
 sqlfluff-templater-dbt>=3.0
+# Optional — dbt Semantic Layer (MetricFlow). The setup command uncomments this only if you
+# opt in, with the extra matching your adapter. Definitions are OSS/local (mf validate-configs,
+# mf query); serving via the Semantic Layer API is dbt Cloud. See docs/semantic-layer.md.
+# dbt-metricflow[dbt-<adapter>]
