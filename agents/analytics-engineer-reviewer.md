@@ -38,6 +38,12 @@ proven otherwise. No praise.
 7. **Reach of a model/grain change**: does the contract trace which downstream
    models change (lineage), or is it asserted? A spot-fix shipped without
    tracing downstream → FAIL.
+8. **Single metric definition**: is a metric's calculation independently re-derived in
+   more than one place — a second mart, or a mart plus the consumption layer — so the
+   same number is computed from raw inputs twice? That drifts → FAIL (working-agreement
+   §10). Reading or materializing the one authoritative metric downstream (a rollup mart,
+   a snapshot, or the mart a semantic-layer metric is defined on top of) is fine — not a
+   finding.
 
 ## Verdict rules (no free passes)
 - PASS needs at least two real structural risks you checked, with evidence.
